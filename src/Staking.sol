@@ -124,7 +124,7 @@ contract Staking {
         if (isEth) {
             ethStakeInfo storage _stake = userEthStakeInfo[msg.sender];
             _userStakeDuration = stakeEndTime - _stake.lastStakeTime;
-            _userShares = (_userStakeDuration * _stake.amountStaked) / (totalStakedEth  * DURATION);
+            _userShares = (_userStakeDuration * _stake.amountStaked) / (totalStakedEth * DURATION);
             reward = _userShares * ethRewardAvailable;
         } else {
             erc20StakeInfo storage _stake = userTokenStakeInfo[msg.sender];

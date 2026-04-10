@@ -57,10 +57,10 @@ contract StakingTest is Test {
         Staking.ethStakeInfo memory stake;
         (, stake.amountStaked,,) = staking.userEthStakeInfo(alice);
         assertEq(stake.amountStaked, 1 ether);
-        
+
         // assume alice tries to stake again
-       vm.expectRevert(Staking.AlreadyStaked.selector);
-       staking.stakeEth{value: 1 ether}();
+        vm.expectRevert(Staking.AlreadyStaked.selector);
+        staking.stakeEth{value: 1 ether}();
     }
 
     function test_stakeETH_success_fuzz(uint256 _amount) public {
@@ -80,8 +80,8 @@ contract StakingTest is Test {
         vm.warp(staking.stakeEndTime() + 1);
         // skip(10 days);
         staking.unstake(true);
-
     }
+
     function test_stake_erc20_success() public {
         vm.startPrank(alice);
         vm.expectRevert(Staking.InvalidAmount.selector);
@@ -89,20 +89,17 @@ contract StakingTest is Test {
         deal(address(stakeToken), address(alice), 10e6);
         stakeToken.approve(address(staking), 10e6);
         staking.stakeErc20(1e6);
-        assertEq(stakeToken.balanceOf(address(staking)), 20000e6+1e6);
+        assertEq(stakeToken.balanceOf(address(staking)), 20000e6 + 1e6);
         Staking.erc20StakeInfo memory stake;
         (, stake.amountStaked,,) = staking.userTokenStakeInfo(alice);
         assertEq(stake.amountStaked, 1e6);
 
         vm.expectRevert(Staking.AlreadyStaked.selector);
         staking.stakeErc20(1e6);
-        
     }
 
     function test_unstake_erc20() public {
-        
         test_stake_erc20_success();
-        
 
         vm.expectRevert(Staking.StakeNotEnded.selector);
         staking.unstake(false);
@@ -112,8 +109,8 @@ contract StakingTest is Test {
 
         vm.expectRevert(Staking.AlreadyWithdrawn.selector);
         staking.unstake(false);
-
     }
+
     function test_stake_erc20_success_fuzz(uint256 _amount) public {
         vm.startPrank(alice);
         // vm.assume(_amount > 1e4);
@@ -122,10 +119,9 @@ contract StakingTest is Test {
         stakeToken.approve(address(staking), _amount);
         staking.stakeErc20(_amount);
     }
-     function test_unstake_erc20_fuzz(uint256 _amount) public {
-        test_stake_erc20_success_fuzz(_amount);
 
-        
+    function test_unstake_erc20_fuzz(uint256 _amount) public {
+        test_stake_erc20_success_fuzz(_amount);
 
         skip(21 days);
         staking.unstake(false);
@@ -134,4 +130,7 @@ contract StakingTest is Test {
         staking.unstake(false);
     }
 
+    function test_unstake_eth_fails() public {
+        deal(address(this), 1 ether);
+    }
 }
